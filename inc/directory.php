@@ -170,8 +170,6 @@ class SiteOrigin_Layout_Directory {
 			'load_posts' => true,
 		);
 
-		$query = apply_filters( 'siteorigin_layout_viewer_query', $query );
-
 		if( !empty($_GET['search']) ) {
 			$query['s'] = stripslashes( $_GET['search'] );
 		}
@@ -179,29 +177,36 @@ class SiteOrigin_Layout_Directory {
 			$query['paged'] = intval( $_GET['page'] );
 		}
 
-		if( class_exists( 'SWP_Query' ) && ! empty( $query['s'] ) ) {
-			$layouts_query = new SWP_Query( $query );
-		}
-		else {
-			$layouts_query = new WP_Query( $query );
-		}
+		$query = apply_filters( 'siteorigin_layout_viewer_query', $query );
 
 		$results = array(
 			'items' => array(),
-			'found' => $layouts_query->found_posts,
-			'max_num_pages' => $layouts_query->max_num_pages
 		);
 
-		foreach( $layouts_query->posts as $post ) {
-			$results['items'][] = array(
-				'id' => $post->ID,
-				'slug' => $post->post_name,
-				'title' => $post->post_title,
-				'description' => $post->post_excerpt,
-				'preview' => get_permalink( $post ),
-				'screenshot' => get_the_post_thumbnail_url( $post ),
-			);
+		if( ! empty( $query ) ) {
+			if( class_exists( 'SWP_Query' ) && ! empty( $query['s'] ) ) {
+				$layouts_query = new SWP_Query( $query );
+			}
+			else {
+				$layouts_query = new WP_Query( $query );
+			}
+
+			$results[ 'found' ] = $layouts_query->found_posts;
+			$results[ 'max_num_pages' ] = $layouts_query->max_num_pages;
+
+			foreach( $layouts_query->posts as $post ) {
+				$results['items'][] = array(
+					'id' => $post->ID,
+					'slug' => $post->post_name,
+					'title' => $post->post_title,
+					'description' => $post->post_excerpt,
+					'preview' => get_permalink( $post ),
+					'screenshot' => get_the_post_thumbnail_url( $post ),
+				);
+			}
 		}
+
+		$results = apply_filters( 'siteorigin_layout_viewer_results', $results );
 
 		header('content-type: application/json');
 		echo json_encode( $results );
