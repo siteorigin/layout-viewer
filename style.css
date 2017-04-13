@@ -1,10 +1,10 @@
 /*
-Theme Name: layout-viewer
+Theme Name: SiteOrigin Layout Viewer
 
 This theme, like WordPress, is licensed under the GPL.
 Use it to make something cool, have fun, and share what you've learned with others.
 
-layout-viewer is based on Underscores http://underscores.me/, (C) 2012-2015 Automattic, Inc.
+Layout Viewer is based on Underscores http://underscores.me/, (C) 2012-2015 Automattic, Inc.
 Underscores is distributed under the terms of the GNU GPL v2 or later.
 
 Normalizing styles have been helped along thanks to the fine work of
@@ -759,54 +759,4 @@ object {
   max-width: 1280px;
   margin: 0 auto;
   padding: 20px 40px;
-}
-
-/*--------------------------------------------------------------
-## The Layout Viewer Bar
---------------------------------------------------------------*/
-#layout-viewer-bar {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-
-  padding: 15px 25px;
-  background: #333;
-  font-size: 15px;
-  z-index: 99999;
-}
-
-#layout-viewer-bar a{
-  color: #fff;
-  text-decoration: none;
-}
-
-#bar-text {
-
-}
-
-#bar-button {
-  display: inline-block;
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  padding: 5px 16px;
-  text-align: center;
-  text-decoration: none;
-  margin-left: 18px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 2px;
-
-  box-shadow: inset 0 14px 27px rgba( 255,255,255,0.25 );
-  text-shadow: 0 1px 1px rgba( 0,0,0,0.45 );
-}
-
-#bar-button:hover {
-  box-shadow: inset 0 14px 27px rgba( 255,255,255,0.35 );
 }
