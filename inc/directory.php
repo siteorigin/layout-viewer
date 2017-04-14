@@ -166,7 +166,7 @@ class SiteOrigin_Layout_Directory {
 		$query = array(
 			'post_status' => 'publish',
 			'post_type' => 'layout',
-			'posts_per_page' => 1,
+			'posts_per_page' => 16,
 			'load_posts' => true,
 		);
 
