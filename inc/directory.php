@@ -4,6 +4,8 @@
  * Class SiteOrigin_Layout_Directory
  */
 class SiteOrigin_Layout_Directory {
+	
+	private $style_fields;
 
 	function __construct(){
 		add_action( 'after_setup_theme', array($this, 'theme_setup') );
@@ -12,14 +14,13 @@ class SiteOrigin_Layout_Directory {
 
 		add_action( 'wp_ajax_nopriv_query_layouts', array($this, 'query_layouts') );
 		add_action( 'wp_ajax_query_layouts', array($this, 'query_layouts') );
+		
+		$this->style_fields = array();
 	}
 
 	static function single(){
 		static $single;
-		if( empty($single) ){
-			$single = new self();
-		}
-		return $single;
+		return empty( $single ) ? $single = new self() : $single;
 	}
 
 	function theme_setup(){
@@ -101,16 +102,31 @@ class SiteOrigin_Layout_Directory {
 	 * @param $panels_data
 	 * @return mixed
 	 */
-	function convert_to_fallback( $panels_data ) {
+	function 	convert_to_fallback( $panels_data ) {
 
-		foreach( $panels_data['widgets'] as &$widget ) {
-			if( empty($widget['panels_info']['class']) || !class_exists($widget['panels_info']['class']) ) continue;
+		foreach( $panels_data['widgets'] as & $widget ) {
+			// Convert the widget styles
+			if( ! empty( $widget[ 'panels_info' ][ 'style' ] ) ) {
+				$widget[ 'panels_info' ][ 'style' ] = $this->convert_styles_to_fallback( $widget[ 'panels_info' ][ 'style' ], 'widget' );
+			}
+			
+			// Check if we're going to convert the widget
+			if( empty( $widget['panels_info']['class'] ) || ! class_exists( $widget['panels_info']['class'] ) ) continue;
 			$widget_obj = new $widget['panels_info']['class']();
 			if( !is_a( $widget_obj, 'SiteOrigin_Widget' ) ) continue;
 
 			$form_options = $widget_obj->form_options();
-
-			$widget = $this->convert_fields_to_fallback( $form_options, $widget );
+			$widget = $this->convert_widget_fields_to_fallback( $form_options, $widget );
+		}
+		
+		foreach( $panels_data['grids'] as & $row ) {
+			if( empty( $row['style'] ) ) continue;
+			$row['style'] = $this->convert_styles_to_fallback( $row['style'], 'row' );
+		}
+		
+		foreach( $panels_data['grid_cells'] as & $cell ) {
+			if( empty( $cell['style'] ) ) continue;
+			$cell['style'] = $this->convert_styles_to_fallback( $cell['style'], 'cell' );
 		}
 
 		return $panels_data;
@@ -126,7 +142,7 @@ class SiteOrigin_Layout_Directory {
 	 *
 	 * @return mixed
 	 */
-	function convert_fields_to_fallback($form, $instance, $level = 0){
+	function convert_widget_fields_to_fallback($form, $instance, $level = 0){
 		if( $level > 10 ) return $instance;
 
 		foreach($form as $id => $field) {
@@ -145,7 +161,7 @@ class SiteOrigin_Layout_Directory {
 				$instance[$id] = $this->convert_fields_to_fallback( $field['fields'], $instance[$id], $level + 1 );
 			}
 			else {
-				if( $field['type'] == 'media' && !empty($field['fallback']) ) {
+				if( $field['type'] == 'media' && !empty( $field[ 'fallback' ] ) ) {
 					$image_src = wp_get_attachment_image_src( intval($instance[$id]), 'full' );
 					$instance[$id] = false;
 					if( !empty($image_src[0]) ) {
@@ -156,6 +172,33 @@ class SiteOrigin_Layout_Directory {
 		}
 
 		return $instance;
+	}
+	
+	/**
+	 * Convert the style fields to an array
+	 *
+	 * @param $styles
+	 * @param $type
+	 *
+	 * @return mixed
+	 */
+	function convert_styles_to_fallback( $styles, $type ){
+		if( empty( $this->style_fields[ $type ] ) ) {
+			$this->style_fields[ $type ] = apply_filters( 'siteorigin_panels_' . $type . '_style_fields', array() );
+		}
+		
+		foreach( $this->style_fields[ $type ] as $field_id => $field ) {
+			if( empty( $styles[ $field_id ] ) ) continue;
+			
+			if( $field[ 'type' ] === 'image' ) {
+				$image_src = wp_get_attachment_image_src( $styles[ $field_id ], 'full' );
+				if( empty( $image_src ) ) continue;
+				
+				$styles[ $field_id ] = $image_src[0] . '#' . $image_src[1] . 'x' . $image_src[2];
+			}
+		}
+		
+		return $styles;
 	}
 
 	/**
