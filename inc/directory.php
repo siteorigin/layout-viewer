@@ -102,7 +102,7 @@ class SiteOrigin_Layout_Directory {
 	 * @param $panels_data
 	 * @return mixed
 	 */
-	function 	convert_to_fallback( $panels_data ) {
+	function convert_to_fallback( $panels_data ) {
 
 		foreach( $panels_data['widgets'] as & $widget ) {
 			// Convert the widget styles
@@ -150,7 +150,7 @@ class SiteOrigin_Layout_Directory {
 			if( $field['type'] == 'repeater' ) {
 				if( !empty($instance[$id]) ) {
 					foreach( array_keys($instance[$id]) as $i ){
-						$instance[$id][$i] = $this->convert_fields_to_fallback( $field['fields'], $instance[$id][$i], $level + 1 );
+						$instance[$id][$i] = $this->convert_widget_fields_to_fallback( $field['fields'], $instance[$id][$i], $level + 1 );
 					}
 				}
 			}
@@ -158,7 +158,7 @@ class SiteOrigin_Layout_Directory {
 				if( empty($instance[$id]) ) {
 					$instance[$id] = array();
 				}
-				$instance[$id] = $this->convert_fields_to_fallback( $field['fields'], $instance[$id], $level + 1 );
+				$instance[$id] = $this->convert_widget_fields_to_fallback( $field['fields'], $instance[$id], $level + 1 );
 			}
 			else {
 				if( $field['type'] == 'media' && !empty( $field[ 'fallback' ] ) ) {
