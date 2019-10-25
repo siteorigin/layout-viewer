@@ -28,6 +28,6 @@ add_action( 'after_setup_theme', 'layout_viewer_content_width', 0 );
  * Enqueue scripts and styles.
  */
 function layout_viewer_scripts() {
-	wp_enqueue_style( 'layout-viewer-style', get_stylesheet_uri() );
+	wp_enqueue_style( 'layout-viewer-style', get_stylesheet_uri(), array(), '1.0.0' );
 }
 add_action( 'wp_enqueue_scripts', 'layout_viewer_scripts' );
