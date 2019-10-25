@@ -257,14 +257,18 @@ th {
 /*--------------------------------------------------------------
 # Typography
 --------------------------------------------------------------*/
+html {
+	font-size: 93.8%;
+}
+
 body,
 button,
 input,
 select,
 textarea {
 	color: #404040;
-	font-size: 14px;
-	line-height: 1.5;
+	font-size: 15px;
+	line-height: 1.7333;
 }
 
 h1,
@@ -273,11 +277,40 @@ h3,
 h4,
 h5,
 h6 {
-	clear: both;
+	font-weight: 600;
+	margin: 25px 0;
+
+	@media (max-width: 480px) {
+		line-height: normal;
+	}
+}
+
+h1 {
+	font-size: 29px;
+}
+
+h2 {
+	font-size: 26px;
+}
+
+h3 {
+	font-size: 23px;
+}
+
+h4 {
+	font-size: 20px;
+}
+
+h5 {
+	font-size: 18px;
+}
+
+h6 {
+	font-size: 16px;
 }
 
 p {
-	margin-bottom: 1.5em;
+	margin: 0 0 26px;
 }
 
 dfn,
@@ -880,7 +913,6 @@ object {
 /*--------------------------------------------------------------
 ## Custom
 --------------------------------------------------------------*/
-
 #masthead {
 	background: #333;
 	margin-bottom: 20px;
