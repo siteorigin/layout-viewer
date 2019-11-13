@@ -238,6 +238,7 @@ class SiteOrigin_Layout_Directory {
 			$results[ 'max_num_pages' ] = $layouts_query->max_num_pages;
 
 			foreach( $layouts_query->posts as $post ) {
+				if( empty($post->post_title) ) continue;
 				$results['items'][] = array(
 					'id' => $post->ID,
 					'slug' => $post->post_name,
