@@ -59,7 +59,7 @@ class SiteOrigin_Layout_Directory {
 			'hierarchical'       => false,
 			'menu_position'      => null,
 			'taxonomies'         => array( 'post_tag' ),
-			'supports'           => array( 'title', 'excerpt', 'editor', 'author', 'thumbnail' )
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'revisions' ),
 		);
 
 		register_post_type( 'layout', $args );
