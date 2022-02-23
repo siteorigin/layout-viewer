@@ -1,34 +1,34 @@
 <?php
 
 /**
- * Class SiteOrigin_Layout_Directory
+ * Class SiteOrigin_Layout_Directory.
  */
 class SiteOrigin_Layout_Directory {
 	
 	private $style_fields;
 
-	function __construct(){
-		add_action( 'after_setup_theme', array($this, 'theme_setup') );
-		add_action( 'after_setup_theme', array($this, 'register_post_type') );
-		add_action( 'template_redirect', array($this, 'handle_layout_download') );
+	function __construct() {
+		add_action( 'after_setup_theme', array( $this, 'theme_setup' ) );
+		add_action( 'after_setup_theme', array( $this, 'register_post_type' ) );
+		add_action( 'template_redirect', array( $this, 'handle_layout_download' ) );
 
-		add_action( 'wp_ajax_nopriv_query_layouts', array($this, 'query_layouts') );
-		add_action( 'wp_ajax_query_layouts', array($this, 'query_layouts') );
+		add_action( 'wp_ajax_nopriv_query_layouts', array( $this, 'query_layouts' ) );
+		add_action( 'wp_ajax_query_layouts', array( $this, 'query_layouts' ) );
 		
 		$this->style_fields = array();
 	}
 
-	static function single(){
+	static function single() {
 		static $single;
 		return empty( $single ) ? $single = new self() : $single;
 	}
 
-	function theme_setup(){
+	function theme_setup() {
 		add_theme_support( 'post-thumbnails' );
 		set_post_thumbnail_size( 700, 525, array( 'center', 'top' ) );
 	}
 
-	function register_post_type(){
+	function register_post_type() {
 		$labels = array(
 			'name'               => _x( 'Layouts', 'post type general name', 'layout-viewer' ),
 			'singular_name'      => _x( 'Layout', 'post type singular name', 'layout-viewer' ),
@@ -43,7 +43,7 @@ class SiteOrigin_Layout_Directory {
 			'search_items'       => __( 'Search Layouts', 'layout-viewer' ),
 			'parent_item_colon'  => __( 'Parent Layouts:', 'layout-viewer' ),
 			'not_found'          => __( 'No layouts found.', 'layout-viewer' ),
-			'not_found_in_trash' => __( 'No layouts found in Trash.', 'layout-viewer' )
+			'not_found_in_trash' => __( 'No layouts found in Trash.', 'layout-viewer' ),
 		);
 
 		$args = array(
@@ -58,7 +58,7 @@ class SiteOrigin_Layout_Directory {
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'taxonomies'         => array('post_tag'),
+			'taxonomies'         => array( 'post_tag' ),
 			'supports'           => array( 'title', 'excerpt', 'editor', 'author', 'thumbnail' )
 		);
 
@@ -76,19 +76,19 @@ class SiteOrigin_Layout_Directory {
 	}
 
 	/**
-	 * Download the JSON file
+	 * Download the JSON file.
 	 */
-	function handle_layout_download(){
-		if( !is_singular('layout') ) return;
+	function handle_layout_download() {
+		if ( ! is_singular( 'layout' ) ) return;
 
 		global $post;
 
-		if( !empty($_GET['action']) && $_GET['action'] == 'download' ) {
-			header('content-type: application/json');
+		if ( ! empty($_GET['action']) && $_GET['action'] == 'download' ) {
+			header( 'content-type: application/json' );
 			$panels_data = get_post_meta( $post->ID, 'panels_data', true );
 			$panels_data = apply_filters( 'siteorigin_layout_viewer_panels_data', $panels_data, $post );
 
-			// Convert all fields that have a fallback option
+			// Convert all fields that have a fallback option.
 			$panels_data = $this->convert_to_fallback( $panels_data );
 
 			echo json_encode( $panels_data );
@@ -104,28 +104,28 @@ class SiteOrigin_Layout_Directory {
 	 */
 	function convert_to_fallback( $panels_data ) {
 
-		foreach( $panels_data['widgets'] as & $widget ) {
-			// Convert the widget styles
-			if( ! empty( $widget[ 'panels_info' ][ 'style' ] ) ) {
+		foreach ( $panels_data['widgets'] as & $widget ) {
+			// Convert the widget styles.
+			if ( ! empty( $widget[ 'panels_info' ][ 'style' ] ) ) {
 				$widget[ 'panels_info' ][ 'style' ] = $this->convert_styles_to_fallback( $widget[ 'panels_info' ][ 'style' ], 'widget' );
 			}
 			
-			// Check if we're going to convert the widget
-			if( empty( $widget['panels_info']['class'] ) || ! class_exists( $widget['panels_info']['class'] ) ) continue;
+			// Check if we're going to convert the widget.
+			if ( empty( $widget['panels_info']['class'] ) || ! class_exists( $widget['panels_info']['class'] ) ) continue;
 			$widget_obj = new $widget['panels_info']['class']();
-			if( !is_a( $widget_obj, 'SiteOrigin_Widget' ) ) continue;
+			if ( !is_a( $widget_obj, 'SiteOrigin_Widget' ) ) continue;
 
 			$form_options = $widget_obj->form_options();
 			$widget = $this->convert_widget_fields_to_fallback( $form_options, $widget );
 		}
-		
-		foreach( $panels_data['grids'] as & $row ) {
-			if( empty( $row['style'] ) ) continue;
+
+		foreach ( $panels_data['grids'] as & $row ) {
+			if ( empty( $row['style'] ) ) continue;
 			$row['style'] = $this->convert_styles_to_fallback( $row['style'], 'row' );
 		}
-		
-		foreach( $panels_data['grid_cells'] as & $cell ) {
-			if( empty( $cell['style'] ) ) continue;
+
+		foreach ( $panels_data['grid_cells'] as & $cell ) {
+			if ( empty( $cell['style'] ) ) continue;
 			$cell['style'] = $this->convert_styles_to_fallback( $cell['style'], 'cell' );
 		}
 
@@ -134,7 +134,7 @@ class SiteOrigin_Layout_Directory {
 	}
 
 	/**
-	 * Convert SiteOrigin widgets to fallback
+	 * Convert SiteOrigin widgets to fallback.
 	 *
 	 * @param $form
 	 * @param $instance
@@ -142,31 +142,35 @@ class SiteOrigin_Layout_Directory {
 	 *
 	 * @return mixed
 	 */
-	function convert_widget_fields_to_fallback($form, $instance, $level = 0){
-		if( $level > 10 ) return $instance;
+	function convert_widget_fields_to_fallback( $form, $instance, $level = 0 ) {
+		if ( $level > 10 ) return $instance;
 
-		foreach($form as $id => $field) {
+		foreach ($form as $id => $field) {
 
-			if( $field['type'] == 'repeater' ) {
-				if( !empty($instance[$id]) ) {
-					foreach( array_keys($instance[$id]) as $i ){
+			if ( $field['type'] == 'repeater' ) {
+				if ( ! empty( $instance[$id] ) ) {
+					foreach ( array_keys( $instance[$id] ) as $i ) {
 						$instance[$id][$i] = $this->convert_widget_fields_to_fallback( $field['fields'], $instance[$id][$i], $level + 1 );
 					}
 				}
 			}
-			else if( $field['type'] == 'section' ) {
-				if( empty($instance[$id]) ) {
+			elseif ( $field['type'] == 'section' ) {
+				if ( empty( $instance[$id] ) ) {
 					$instance[$id] = array();
 				}
 				$instance[$id] = $this->convert_widget_fields_to_fallback( $field['fields'], $instance[$id], $level + 1 );
 			}
 			else {
-				if( $field['type'] == 'media' && !empty( $field[ 'fallback' ] ) ) {
-					$image_src = wp_get_attachment_image_src( intval($instance[$id]), 'full' );
+				if ( $field['type'] == 'media' && ! empty( $field[ 'fallback' ] ) ) {
+					$image_src = wp_get_attachment_image_src( intval( $instance[$id] ), 'full' );
 					$instance[$id] = false;
-					if( !empty($image_src[0]) ) {
+					if ( ! empty($image_src[0]) ) {
 						$instance[$id . '_fallback'] = $image_src[0] . '#' . $image_src[1] . 'x' . $image_src[2];
 					}
+				}
+				elseif ( preg_match( "/^[a-zA-Z0-9_-.+]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/", trim( $instance[$id] ) ) ) {
+					// This is an email, which we never want to pass to the user.
+					$instance[$id] = '';
 				}
 			}
 		}
@@ -175,36 +179,36 @@ class SiteOrigin_Layout_Directory {
 	}
 	
 	/**
-	 * Convert the style fields to an array
+	 * Convert the style fields to an array.
 	 *
 	 * @param $styles
 	 * @param $type
 	 *
 	 * @return mixed
 	 */
-	function convert_styles_to_fallback( $styles, $type ){
-		if( empty( $this->style_fields[ $type ] ) ) {
+	function convert_styles_to_fallback( $styles, $type ) {
+		if ( empty( $this->style_fields[ $type ] ) ) {
 			$this->style_fields[ $type ] = apply_filters( 'siteorigin_panels_' . $type . '_style_fields', array() );
 		}
-		
-		foreach( $this->style_fields[ $type ] as $field_id => $field ) {
-			if( empty( $styles[ $field_id ] ) ) continue;
+
+		foreach ( $this->style_fields[ $type ] as $field_id => $field ) {
+			if ( empty( $styles[ $field_id ] ) ) continue;
 			
-			if( $field[ 'type' ] === 'image' ) {
+			if ( $field[ 'type' ] === 'image' ) {
 				$image_src = wp_get_attachment_image_src( $styles[ $field_id ], 'full' );
-				if( empty( $image_src ) ) continue;
-				
+				if ( empty( $image_src ) ) continue;
+
 				$styles[ $field_id ] = $image_src[0] . '#' . $image_src[1] . 'x' . $image_src[2];
 			}
 		}
-		
+
 		return $styles;
 	}
 
 	/**
 	 * This is the thing where we query layouts and return some json.
 	 */
-	function query_layouts(){
+	function query_layouts() {
 
 		$query = array(
 			'post_status' => 'publish',
@@ -213,10 +217,10 @@ class SiteOrigin_Layout_Directory {
 			'load_posts' => true,
 		);
 
-		if( !empty($_GET['search']) ) {
+		if ( ! empty($_GET['search'] ) ) {
 			$query['s'] = stripslashes( $_GET['search'] );
 		}
-		if( !empty($_GET['page']) ) {
+		if ( ! empty($_GET['page'] ) ) {
 			$query['paged'] = intval( $_GET['page'] );
 		}
 
@@ -226,8 +230,8 @@ class SiteOrigin_Layout_Directory {
 			'items' => array(),
 		);
 
-		if( ! empty( $query ) ) {
-			if( class_exists( 'SWP_Query' ) && ! empty( $query['s'] ) ) {
+		if ( ! empty( $query ) ) {
+			if ( class_exists( 'SWP_Query' ) && ! empty( $query['s'] ) ) {
 				$layouts_query = new SWP_Query( $query );
 			}
 			else {
@@ -237,8 +241,7 @@ class SiteOrigin_Layout_Directory {
 			$results[ 'found' ] = $layouts_query->found_posts;
 			$results[ 'max_num_pages' ] = $layouts_query->max_num_pages;
 
-			foreach( $layouts_query->posts as $post ) {
-				if( empty($post->post_title) ) continue;
+			foreach ( $layouts_query->posts as $post ) {
 				$results['items'][] = array(
 					'id' => $post->ID,
 					'slug' => $post->post_name,
@@ -252,7 +255,7 @@ class SiteOrigin_Layout_Directory {
 
 		$results = apply_filters( 'siteorigin_layout_viewer_results', $results );
 
-		header('content-type: application/json');
+		header( 'content-type: application/json' );
 		echo json_encode( $results );
 		wp_die();
 	}
