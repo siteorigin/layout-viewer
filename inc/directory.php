@@ -9,7 +9,7 @@ class SiteOrigin_Layout_Directory {
 
 	function __construct() {
 		add_action( 'after_setup_theme', array( $this, 'theme_setup' ) );
-		add_action( 'after_setup_theme', array( $this, 'register_post_type' ) );
+		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action( 'template_redirect', array( $this, 'handle_layout_download' ) );
 
 		add_action( 'wp_ajax_nopriv_query_layouts', array( $this, 'query_layouts' ) );
