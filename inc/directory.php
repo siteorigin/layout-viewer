@@ -173,9 +173,13 @@ class SiteOrigin_Layout_Directory {
 					if ( ! empty( $image_src[0] ) ) {
 						$instance[ $id . '_fallback' ] = $image_src[0] . '#' . $image_src[1] . 'x' . $image_src[2];
 					}
-			} elseif ( preg_match( '/^[a-zA-Z0-9_-.+]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/', trim( $instance[ $id ] ) ) ) {
-				// This is an email, which we never want to pass to the user.
-				$instance[ $id ] = '';
+				} elseif (
+					empty( $instance[ $id ] ) ||
+					preg_match( '/^[a-zA-Z0-9_\-.+]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/', trim( $instance[ $id ] ) )
+				) {
+					// This is an email, which we never want to pass to the user.
+					$instance[ $id ] = '';
+				}
 			}
 		}
 
