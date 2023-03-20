@@ -1,347 +1,93 @@
-# Copyright (C) 2015 Automattic
+# Copyright (C) 2023 SiteOrigin
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: _s 1.0.0\n"
-"Report-Msgid-Bugs-To: http://wordpress.org/tags/_s\n"
-"POT-Creation-Date: 2015-06-12 21:51:31+0000\n"
+"Project-Id-Version: SiteOrigin Layout Viewer \n"
+"Report-Msgid-Bugs-To: https://github.com/siteorigin/layout-viewer\n"
+"POT-Creation-Date: 2023-03-20 12:57:49+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2023-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: 404.php:15
-#@ _s
-msgid "Oops! That page can&rsquo;t be found."
+#: inc/directory.php:33
+msgctxt "post type general name"
+msgid "Layouts"
 msgstr ""
 
-#: 404.php:19
-#@ _s
-msgid "It looks like nothing was found at this location. Maybe try one of the links below or a search?"
+#: inc/directory.php:34
+msgctxt "post type singular name"
+msgid "Layout"
 msgstr ""
 
-#: 404.php:27
-#@ _s
-msgid "Most Used Categories"
+#: inc/directory.php:35
+msgctxt "admin menu"
+msgid "Layouts"
 msgstr ""
 
-#. translators: %1$s: smiley
-#: 404.php:44
-#, php-format
-#@ _s
-msgid "Try looking in the monthly archives. %1$s"
+#: inc/directory.php:36
+msgctxt "add new on admin bar"
+msgid "Layout"
 msgstr ""
 
-#: comments.php:29
-#, php-format
-#@ _s
-msgctxt "comments title"
-msgid "One thought on &ldquo;%2$s&rdquo;"
-msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
-msgstr[0] ""
-msgstr[1] ""
-
-#: comments.php:38
-#: comments.php:59
-#@ _s
-msgid "Comment navigation"
+#: inc/directory.php:37
+msgctxt "book"
+msgid "Add New"
 msgstr ""
 
-#: comments.php:41
-#: comments.php:62
-#@ _s
-msgid "Older Comments"
+#: inc/directory.php:38
+msgid "Add New Layout"
 msgstr ""
 
-#: comments.php:42
-#: comments.php:63
-#@ _s
-msgid "Newer Comments"
+#: inc/directory.php:39
+msgid "New Layout"
 msgstr ""
 
-#: comments.php:75
-#@ _s
-msgid "Comments are closed."
+#: inc/directory.php:40
+msgid "Edit Layout"
 msgstr ""
 
-#: footer.php:16
-#@ _s
-msgid "http://wordpress.org/"
+#: inc/directory.php:41
+msgid "View Layout"
 msgstr ""
 
-#: footer.php:16
-#, php-format
-#@ _s
-msgid "Proudly powered by %s"
+#: inc/directory.php:42
+msgid "All Layouts"
 msgstr ""
 
-#: footer.php:18
-#, php-format
-#@ _s
-msgid "Theme: %1$s by %2$s."
+#: inc/directory.php:43
+msgid "Search Layouts"
 msgstr ""
 
-#: functions.php:45
-#: header.php:32
-#@ _s
-msgid "Primary Menu"
+#: inc/directory.php:44
+msgid "Parent Layouts:"
 msgstr ""
 
-#: functions.php:100
-#@ _s
-msgid "Sidebar"
+#: inc/directory.php:45
+msgid "No layouts found."
 msgstr ""
 
-#: header.php:23
-#@ _s
-msgid "Skip to content"
+#: inc/directory.php:46
+msgid "No layouts found in Trash."
 msgstr ""
 
-#: inc/extras.php:52
-#, php-format
-#@ _s
-msgid "Page %s"
+#: inc/directory.php:71
+msgid "Layout Tags"
 msgstr ""
 
-#: inc/template-tags.php:23
-#@ _s
-msgid "Posts navigation"
+#: index.php:4
+msgid "This site is just for previewing. There's nothing to see here..."
+msgstr ""
+#. Theme Name of the plugin/theme
+msgid "SiteOrigin Layout Viewer"
 msgstr ""
 
-#: inc/template-tags.php:27
-#@ _s
-msgid "Older posts"
+#. Author of the plugin/theme
+msgid "SiteOrigin"
 msgstr ""
 
-#: inc/template-tags.php:31
-#@ _s
-msgid "Newer posts"
-msgstr ""
-
-#: inc/template-tags.php:56
-#@ _s
-msgid "Post navigation"
-msgstr ""
-
-#: inc/template-tags.php:86
-#, php-format
-#@ _s
-msgctxt "post date"
-msgid "Posted on %s"
-msgstr ""
-
-#: inc/template-tags.php:91
-#, php-format
-#@ _s
-msgctxt "post author"
-msgid "by %s"
-msgstr ""
-
-#. translators: used between list items, there is a space after the comma
-#: inc/template-tags.php:108
-#: inc/template-tags.php:114
-#@ _s
-msgid ", "
-msgstr ""
-
-#: inc/template-tags.php:110
-#, php-format
-#@ _s
-msgid "Posted in %1$s"
-msgstr ""
-
-#: inc/template-tags.php:116
-#, php-format
-#@ _s
-msgid "Tagged %1$s"
-msgstr ""
-
-#: inc/template-tags.php:122
-#@ _s
-msgid "Leave a comment"
-msgstr ""
-
-#: inc/template-tags.php:122
-#@ _s
-msgid "1 Comment"
-msgstr ""
-
-#: inc/template-tags.php:122
-#@ _s
-msgid "% Comments"
-msgstr ""
-
-#: inc/template-tags.php:126
-#: template-parts/content-page.php:26
-#@ _s
-msgid "Edit"
-msgstr ""
-
-#: inc/template-tags.php:143
-#, php-format
-#@ _s
-msgid "Category: %s"
-msgstr ""
-
-#: inc/template-tags.php:145
-#, php-format
-#@ _s
-msgid "Tag: %s"
-msgstr ""
-
-#: inc/template-tags.php:147
-#, php-format
-#@ _s
-msgid "Author: %s"
-msgstr ""
-
-#: inc/template-tags.php:149
-#, php-format
-#@ _s
-msgid "Year: %s"
-msgstr ""
-
-#: inc/template-tags.php:149
-#@ _s
-msgctxt "yearly archives date format"
-msgid "Y"
-msgstr ""
-
-#: inc/template-tags.php:151
-#, php-format
-#@ _s
-msgid "Month: %s"
-msgstr ""
-
-#: inc/template-tags.php:151
-#@ _s
-msgctxt "monthly archives date format"
-msgid "F Y"
-msgstr ""
-
-#: inc/template-tags.php:153
-#, php-format
-#@ _s
-msgid "Day: %s"
-msgstr ""
-
-#: inc/template-tags.php:153
-#@ _s
-msgctxt "daily archives date format"
-msgid "F j, Y"
-msgstr ""
-
-#: inc/template-tags.php:156
-#@ _s
-msgctxt "post format archive title"
-msgid "Asides"
-msgstr ""
-
-#: inc/template-tags.php:158
-#@ _s
-msgctxt "post format archive title"
-msgid "Galleries"
-msgstr ""
-
-#: inc/template-tags.php:160
-#@ _s
-msgctxt "post format archive title"
-msgid "Images"
-msgstr ""
-
-#: inc/template-tags.php:162
-#@ _s
-msgctxt "post format archive title"
-msgid "Videos"
-msgstr ""
-
-#: inc/template-tags.php:164
-#@ _s
-msgctxt "post format archive title"
-msgid "Quotes"
-msgstr ""
-
-#: inc/template-tags.php:166
-#@ _s
-msgctxt "post format archive title"
-msgid "Links"
-msgstr ""
-
-#: inc/template-tags.php:168
-#@ _s
-msgctxt "post format archive title"
-msgid "Statuses"
-msgstr ""
-
-#: inc/template-tags.php:170
-#@ _s
-msgctxt "post format archive title"
-msgid "Audio"
-msgstr ""
-
-#: inc/template-tags.php:172
-#@ _s
-msgctxt "post format archive title"
-msgid "Chats"
-msgstr ""
-
-#: inc/template-tags.php:175
-#, php-format
-#@ _s
-msgid "Archives: %s"
-msgstr ""
-
-#. translators: 1: Taxonomy singular name, 2: Current taxonomy term
-#: inc/template-tags.php:179
-#, php-format
-#@ _s
-msgid "%1$s: %2$s"
-msgstr ""
-
-#: inc/template-tags.php:181
-#@ _s
-msgid "Archives"
-msgstr ""
-
-#: search.php:16
-#, php-format
-#@ _s
-msgid "Search Results for: %s"
-msgstr ""
-
-#: template-parts/content-none.php:14
-#@ _s
-msgid "Nothing Found"
-msgstr ""
-
-#: template-parts/content-none.php:20
-#, php-format
-#@ _s
-msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
-msgstr ""
-
-#: template-parts/content-none.php:24
-#@ _s
-msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
-msgstr ""
-
-#: template-parts/content-none.php:29
-#@ _s
-msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
-msgstr ""
-
-#: template-parts/content-page.php:19
-#: template-parts/content-single.php:23
-#: template-parts/content.php:32
-#@ _s
-msgid "Pages:"
-msgstr ""
-
-#. translators: %s: Name of current post 
-#: template-parts/content.php:25
-#, php-format
-#@ _s
-msgid "Continue reading %s <span class=\"meta-nav\">&rarr;</span>"
+#. Author URI of the plugin/theme
+msgid "https://siteorigin.com/"
 msgstr ""
