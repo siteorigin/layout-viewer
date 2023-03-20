@@ -1,13 +1,8 @@
 <?php
-/**
- * layout-viewer functions and definitions
- *
- * @package layout-viewer
- */
 
 include get_template_directory() . '/inc/directory.php';
 
-function layout_viewer_after_setup_theme(){
+function layout_viewer_after_setup_theme() {
 	add_theme_support( 'title-tag' );
 }
 add_action( 'after_setup_theme', 'layout_viewer_after_setup_theme' );
