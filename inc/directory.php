@@ -175,7 +175,10 @@ class SiteOrigin_Layout_Directory {
 					}
 				} elseif (
 					empty( $instance[ $id ] ) ||
-					preg_match( '/^[a-zA-Z0-9_\-.+]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/', trim( $instance[ $id ] ) )
+					(
+						is_string( $instance[ $id ] ) &&
+						preg_match( '/^[a-zA-Z0-9_\-.+]+@[a-zA-Z0-9-]+.[a-zA-Z]+$/', trim( $instance[ $id ] ) )
+					)
 				) {
 					// This is an email, which we never want to pass to the user.
 					$instance[ $id ] = '';
