@@ -58,8 +58,8 @@ class SiteOrigin_Layout_Directory {
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'taxonomies'         => array( 'post_tag' ),
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'revisions' ),
+			'taxonomies'         => array( 'category' ),
+			'supports'           => array( 'title', 'editor', 'thumbnail', 'revisions' ),
 		);
 
 		register_post_type( 'layout', $args );
