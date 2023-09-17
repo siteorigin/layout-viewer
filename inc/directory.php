@@ -65,10 +65,13 @@ class SiteOrigin_Layout_Directory {
 		register_post_type( 'layout', $args );
 
 		register_taxonomy(
-			'layout_tag',
-			'layout',
+			'niches',
 			array(
-				'label' => __( 'Layout Tags' ),
+				'layout',
+				'premium_layouts',
+			),
+			array(
+				'label' => __( 'Niches' ),
 				'public' => true,
 				'hierarchical' => false,
 			)
@@ -152,7 +155,6 @@ class SiteOrigin_Layout_Directory {
 		if ( $level > 10 ) {
 			return $instance;
 		}
-
 		foreach ( $form as $id => $field ) {
 			if ( $field['type'] == 'repeater' ) {
 				if ( ! empty( $instance[ $id ] ) ) {
