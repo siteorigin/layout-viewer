@@ -256,6 +256,9 @@ class SiteOrigin_Layout_Directory {
 			$results[ 'max_num_pages' ] = $layouts_query->max_num_pages;
 
 			foreach ( $layouts_query->posts as $post ) {
+				$category = wp_get_post_terms( $post->ID, 'category', array( 'fields' => 'names' ) );
+				$niches = wp_get_post_terms( $post->ID, 'niches', array( 'fields' => 'names' ) );
+
 				$results['items'][] = array(
 					'id' => $post->ID,
 					'slug' => $post->post_name,
@@ -263,6 +266,9 @@ class SiteOrigin_Layout_Directory {
 					'description' => $post->post_excerpt,
 					'preview' => get_permalink( $post ),
 					'screenshot' => get_the_post_thumbnail_url( $post ),
+					'type' => $post->post_type == 'premium_layouts' ? 'premium' : 'free',
+					'catagory' => ! empty( $category ) ? $category[0] : '',
+					'niches' => ! empty( $niches ) ? json_encode( $niches ) : '',
 				);
 			}
 		}
