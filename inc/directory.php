@@ -261,6 +261,9 @@ class SiteOrigin_Layout_Directory {
 
 			$results[ 'found' ] = $layouts_query->found_posts;
 			$results[ 'max_num_pages' ] = $layouts_query->max_num_pages;
+			$results['found'] = $layouts_query->found_posts;
+			$results['niches'] = self::get_type_terms( 'niches' );
+			$results['categories'] = self::get_type_terms( 'category_layouts' );
 
 			foreach ( $layouts_query->posts as $post ) {
 				$category = wp_get_post_terms( $post->ID, 'category_layouts', array( 'fields' => 'names' ) );
@@ -285,6 +288,24 @@ class SiteOrigin_Layout_Directory {
 		header( 'content-type: application/json' );
 		echo json_encode( $results );
 		wp_die();
+	}
+
+	public static function get_type_terms( $term_type ) {
+		$terms = get_terms( array(
+			'taxonomy' => $term_type,
+			'hide_empty' => false,
+		) );
+
+		if ( empty( $terms ) || is_wp_error( $terms ) ) {
+			return null;
+		}
+
+		$return = array();
+		foreach ( $terms as $term ) {
+			$return[ $term->slug ] = $term->name;
+		}
+
+		return apply_filters( 'siteorigin_layout_viewer_type_terms', $return );
 	}
 }
 
