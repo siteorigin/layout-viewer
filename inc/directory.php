@@ -234,16 +234,24 @@ class SiteOrigin_Layout_Directory {
 		$query = array(
 			'post_status' => 'publish',
 			'post_type' => 'layout',
-			'posts_per_page' => 16,
+			'nopaging ' => true,
 			'load_posts' => true,
 		);
 
-		if ( ! empty( $_GET['search'] ) ) {
-			$query['s'] = stripslashes( $_GET['search'] );
-		}
-
-		if ( ! empty( $_GET['page'] ) ) {
-			$query['paged'] = intval( $_GET['page'] );
+		// Backwards compatibility check.
+		if ( ! empty( $_GET['all'] ) ) {
+			// We now return all layouts rather than just 16.
+			$query['nopaging'] = true;
+		} else {
+			$query['posts_per_page'] = 16;
+			if ( ! empty( $_GET['search'] ) ) {
+				$query['s'] = stripslashes( $_GET['search'] );
+			}
+	
+			// BC.
+			if ( ! empty( $_GET['page'] ) ) {
+				$query['paged'] = intval( $_GET['page'] );
+			}
 		}
 
 		$query = apply_filters( 'siteorigin_layout_viewer_query', $query );
@@ -253,14 +261,19 @@ class SiteOrigin_Layout_Directory {
 		);
 
 		if ( ! empty( $query ) ) {
-			if ( class_exists( 'SWP_Query' ) && ! empty( $query['s'] ) ) {
-				$layouts_query = new SWP_Query( $query );
+			// Backwards compatibility check.
+			if ( empty( $_GET['all'] ) ) {
+				if ( class_exists( 'SWP_Query' ) && ! empty( $query['s'] ) ) { // BC.
+					$layouts_query = new SWP_Query( $query );
+				} else {
+					$layouts_query = new WP_Query( $query );
+				}
+				$results['found'] = $layouts_query->found_posts;
+				$results['max_num_pages'] = $layouts_query->max_num_pages;
 			} else {
 				$layouts_query = new WP_Query( $query );
 			}
 
-			$results[ 'found' ] = $layouts_query->found_posts;
-			$results[ 'max_num_pages' ] = $layouts_query->max_num_pages;
 			$results['found'] = $layouts_query->found_posts;
 			$results['niches'] = self::get_type_terms( 'niches' );
 			$results['categories'] = self::get_type_terms( 'category_layouts' );
