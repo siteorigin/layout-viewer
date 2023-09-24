@@ -58,22 +58,29 @@ class SiteOrigin_Layout_Directory {
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'taxonomies'         => array( 'category' ),
 			'supports'           => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
 		);
 
 		register_post_type( 'layout', $args );
 
+		$types = apply_filters( 'siteorigin_layout_viewer_post_types', array( 'layout' ) );
 		register_taxonomy(
 			'niches',
-			array(
-				'layout',
-				'premium_layouts',
-			),
+			$types,
 			array(
 				'label' => __( 'Niches' ),
 				'public' => true,
 				'hierarchical' => false,
+			)
+		);
+
+		register_taxonomy(
+			'category_layouts',
+			$types,
+			array(
+				'label' => __( 'Categories' ),
+				'public' => true,
+				'hierarchical' => true,
 			)
 		);
 	}
@@ -256,7 +263,7 @@ class SiteOrigin_Layout_Directory {
 			$results[ 'max_num_pages' ] = $layouts_query->max_num_pages;
 
 			foreach ( $layouts_query->posts as $post ) {
-				$category = wp_get_post_terms( $post->ID, 'category', array( 'fields' => 'names' ) );
+				$category = wp_get_post_terms( $post->ID, 'category_layouts', array( 'fields' => 'names' ) );
 				$niches = wp_get_post_terms( $post->ID, 'niches', array( 'fields' => 'names' ) );
 
 				$results['items'][] = array(
@@ -266,8 +273,8 @@ class SiteOrigin_Layout_Directory {
 					'description' => $post->post_excerpt,
 					'preview' => get_permalink( $post ),
 					'screenshot' => get_the_post_thumbnail_url( $post ),
-					'type' => $post->post_type == 'premium_layouts' ? 'premium' : 'free',
-					'catagory' => ! empty( $category ) ? $category[0] : '',
+					'access' => $post->post_type == 'premium_layouts' ? 'premium' : 'free',
+					'category' => ! empty( $category ) ? $category[0] : '',
 					'niches' => ! empty( $niches ) ? json_encode( $niches ) : '',
 				);
 			}
