@@ -58,19 +58,29 @@ class SiteOrigin_Layout_Directory {
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'taxonomies'         => array( 'post_tag' ),
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'revisions' ),
+			'supports'           => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
 		);
 
 		register_post_type( 'layout', $args );
 
+		$types = apply_filters( 'siteorigin_layout_viewer_post_types', array( 'layout' ) );
 		register_taxonomy(
-			'layout_tag',
-			'layout',
+			'niches',
+			$types,
 			array(
-				'label' => __( 'Layout Tags' ),
+				'label' => __( 'Niches' ),
 				'public' => true,
 				'hierarchical' => false,
+			)
+		);
+
+		register_taxonomy(
+			'category_layouts',
+			$types,
+			array(
+				'label' => __( 'Categories' ),
+				'public' => true,
+				'hierarchical' => true,
 			)
 		);
 	}
@@ -152,7 +162,6 @@ class SiteOrigin_Layout_Directory {
 		if ( $level > 10 ) {
 			return $instance;
 		}
-
 		foreach ( $form as $id => $field ) {
 			if ( $field['type'] == 'repeater' ) {
 				if ( ! empty( $instance[ $id ] ) ) {
@@ -225,16 +234,24 @@ class SiteOrigin_Layout_Directory {
 		$query = array(
 			'post_status' => 'publish',
 			'post_type' => 'layout',
-			'posts_per_page' => 16,
+			'nopaging ' => true,
 			'load_posts' => true,
 		);
 
-		if ( ! empty( $_GET['search'] ) ) {
-			$query['s'] = stripslashes( $_GET['search'] );
-		}
-
-		if ( ! empty( $_GET['page'] ) ) {
-			$query['paged'] = intval( $_GET['page'] );
+		// Backwards compatibility check.
+		if ( ! empty( $_GET['all'] ) ) {
+			// We now return all layouts rather than just 16.
+			$query['nopaging'] = true;
+		} else {
+			$query['posts_per_page'] = 16;
+			if ( ! empty( $_GET['search'] ) ) {
+				$query['s'] = stripslashes( $_GET['search'] );
+			}
+	
+			// BC.
+			if ( ! empty( $_GET['page'] ) ) {
+				$query['paged'] = intval( $_GET['page'] );
+			}
 		}
 
 		$query = apply_filters( 'siteorigin_layout_viewer_query', $query );
@@ -244,16 +261,27 @@ class SiteOrigin_Layout_Directory {
 		);
 
 		if ( ! empty( $query ) ) {
-			if ( class_exists( 'SWP_Query' ) && ! empty( $query['s'] ) ) {
-				$layouts_query = new SWP_Query( $query );
+			// Backwards compatibility check.
+			if ( empty( $_GET['all'] ) ) {
+				if ( class_exists( 'SWP_Query' ) && ! empty( $query['s'] ) ) { // BC.
+					$layouts_query = new SWP_Query( $query );
+				} else {
+					$layouts_query = new WP_Query( $query );
+				}
+				$results['found'] = $layouts_query->found_posts;
+				$results['max_num_pages'] = $layouts_query->max_num_pages;
 			} else {
 				$layouts_query = new WP_Query( $query );
 			}
 
-			$results[ 'found' ] = $layouts_query->found_posts;
-			$results[ 'max_num_pages' ] = $layouts_query->max_num_pages;
+			$results['found'] = $layouts_query->found_posts;
+			$results['niches'] = self::get_type_terms( 'niches' );
+			$results['categories'] = self::get_type_terms( 'category_layouts' );
 
 			foreach ( $layouts_query->posts as $post ) {
+				$category = wp_get_post_terms( $post->ID, 'category_layouts', array( 'fields' => 'names' ) );
+				$niches = wp_get_post_terms( $post->ID, 'niches', array( 'fields' => 'names' ) );
+
 				$results['items'][] = array(
 					'id' => $post->ID,
 					'slug' => $post->post_name,
@@ -261,6 +289,9 @@ class SiteOrigin_Layout_Directory {
 					'description' => $post->post_excerpt,
 					'preview' => get_permalink( $post ),
 					'screenshot' => get_the_post_thumbnail_url( $post ),
+					'access' => $post->post_type == 'premium_layouts' ? 'premium' : 'free',
+					'category' => ! empty( $category ) ? $category[0] : '',
+					'niches' => ! empty( $niches ) ? json_encode( $niches ) : '',
 				);
 			}
 		}
@@ -270,6 +301,24 @@ class SiteOrigin_Layout_Directory {
 		header( 'content-type: application/json' );
 		echo json_encode( $results );
 		wp_die();
+	}
+
+	public static function get_type_terms( $term_type ) {
+		$terms = get_terms( array(
+			'taxonomy' => $term_type,
+			'hide_empty' => false,
+		) );
+
+		if ( empty( $terms ) || is_wp_error( $terms ) ) {
+			return null;
+		}
+
+		$return = array();
+		foreach ( $terms as $term ) {
+			$return[ $term->slug ] = $term->name;
+		}
+
+		return apply_filters( 'siteorigin_layout_viewer_type_terms', $return );
 	}
 }
 
