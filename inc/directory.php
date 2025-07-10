@@ -302,6 +302,20 @@ class SiteOrigin_Layout_Directory {
 				$category = wp_get_post_terms( $post->ID, 'category_layouts', array( 'fields' => 'names' ) );
 				$niches = wp_get_post_terms( $post->ID, 'niches', array( 'fields' => 'names' ) );
 
+				// Process category and niches for proper CSS class filtering.
+				$processed_category = ! empty( $category ) ? $category[0] : '';
+				$processed_niches = ! empty( $niches ) ? json_encode( $niches ) : '';
+				
+				// Create CSS-safe class names for filtering.
+				$category_class = ! empty( $processed_category ) ? 'so-' . sanitize_title( $processed_category ) : '';
+				$niche_classes = '';
+				if ( ! empty( $niches ) ) {
+					$niche_classes = ' ' . implode( ' ', array_map( function( $niche ) {
+						return 'so-' . sanitize_title( $niche );
+					}, $niches ) );
+				}
+				$css_class = trim( $category_class . $niche_classes );
+
 				$results['items'][] = array(
 					'id' => $post->ID,
 					'slug' => $post->post_name,
@@ -310,8 +324,9 @@ class SiteOrigin_Layout_Directory {
 					'preview' => get_permalink( $post ),
 					'screenshot' => get_the_post_thumbnail_url( $post ),
 					'access' => $post->post_type == 'premium_layouts' ? 'premium' : 'free',
-					'category' => ! empty( $category ) ? $category[0] : '',
-					'niches' => ! empty( $niches ) ? json_encode( $niches ) : '',
+					'category' => $processed_category,
+					'niches' => $processed_niches,
+					'class' => $css_class, // Add the CSS class for filtering.
 				);
 			}
 		}
