@@ -225,7 +225,7 @@ class SiteOrigin_Layout_Directory {
 	 */
 	public function convert_styles_to_fallback( $styles, $type ) {
 		if ( empty( $this->style_fields[ $type ] ) ) {
-			$this->style_fields[ $type ] = apply_filters( 'siteorigin_panels_' . $type . '_style_fields', array() );
+			$this->style_fields[ $type ] = apply_filters( 'siteorigin_panels_' . $type . '_style_fields', array(), 0, array() );
 		}
 
 		foreach ( $this->style_fields[ $type ] as $field_id => $field ) {
