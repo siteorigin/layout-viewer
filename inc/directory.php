@@ -98,6 +98,26 @@ class SiteOrigin_Layout_Directory {
 		if ( ! empty( $_GET['action'] ) && $_GET['action'] == 'download' ) {
 			header( 'content-type: application/json' );
 			$panels_data = get_post_meta( $post->ID, 'panels_data', true );
+			
+			if ( empty( $panels_data ) ) {
+				// Create some sample panels data if none exists.
+				$panels_data = array(
+					'widgets' => array(),
+					'grids' => array(
+						array(
+							'cells' => 1,
+							'style' => array()
+						)
+					),
+					'grid_cells' => array(
+						array(
+							'weight' => 1,
+							'style' => array()
+						)
+					)
+				);
+			}
+			
 			$panels_data = apply_filters( 'siteorigin_layout_viewer_panels_data', $panels_data, $post );
 
 			// Convert all fields that have a fallback option.
