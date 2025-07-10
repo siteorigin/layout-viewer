@@ -96,7 +96,6 @@ class SiteOrigin_Layout_Directory {
 		global $post;
 
 		if ( ! empty( $_GET['action'] ) && $_GET['action'] == 'download' ) {
-			header( 'content-type: application/json' );
 			$panels_data = get_post_meta( $post->ID, 'panels_data', true );
 			
 			if ( empty( $panels_data ) ) {
@@ -123,6 +122,7 @@ class SiteOrigin_Layout_Directory {
 			// Convert all fields that have a fallback option.
 			$panels_data = $this->convert_to_fallback( $panels_data );
 
+			header( 'content-type: application/json' );
 			echo json_encode( $panels_data );
 			exit();
 		}
