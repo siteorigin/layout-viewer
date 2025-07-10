@@ -350,7 +350,9 @@ class SiteOrigin_Layout_Directory {
 
 		$return = array();
 		foreach ( $terms as $term ) {
-			$return[ $term->slug ] = $term->name;
+			// Format for filtering: convert name to CSS class format with 'so-' prefix.
+			$css_class = 'so-' . sanitize_title( $term->name );
+			$return[ $css_class ] = $term->name;
 		}
 
 		return apply_filters( 'siteorigin_layout_viewer_type_terms', $return );
