@@ -122,9 +122,7 @@ class SiteOrigin_Layout_Directory {
 			// Convert all fields that have a fallback option.
 			$panels_data = $this->convert_to_fallback( $panels_data );
 
-			header( 'content-type: application/json' );
-			echo json_encode( $panels_data );
-			exit();
+			wp_send_json( $panels_data );
 		}
 	}
 
@@ -333,9 +331,7 @@ class SiteOrigin_Layout_Directory {
 
 		$results = apply_filters( 'siteorigin_layout_viewer_results', $results );
 
-		header( 'content-type: application/json' );
-		echo json_encode( $results );
-		wp_die();
+		wp_send_json( $results );
 	}
 
 	public static function get_type_terms( $term_type ) {
