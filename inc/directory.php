@@ -297,6 +297,12 @@ class SiteOrigin_Layout_Directory {
 			$results['categories'] = self::get_type_terms( 'category_layouts' );
 
 			foreach ( $layouts_query->posts as $post ) {
+				// Skip layouts without panels_data.
+				if ( ! metadata_exists( 'post', $post->ID, 'panels_data' ) ) {
+					$results['found']--; // Decrement the count
+					continue;
+				}
+				
 				$category = wp_get_post_terms( $post->ID, 'category_layouts', array( 'fields' => 'names' ) );
 				$niches = wp_get_post_terms( $post->ID, 'niches', array( 'fields' => 'names' ) );
 
