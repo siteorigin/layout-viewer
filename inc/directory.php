@@ -58,19 +58,29 @@ class SiteOrigin_Layout_Directory {
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'taxonomies'         => array( 'post_tag' ),
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'revisions' ),
+			'supports'           => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
 		);
 
 		register_post_type( 'layout', $args );
 
+		$types = apply_filters( 'siteorigin_layout_viewer_post_types', array( 'layout' ) );
 		register_taxonomy(
-			'layout_tag',
-			'layout',
+			'niches',
+			$types,
 			array(
-				'label' => __( 'Layout Tags' ),
+				'label' => __( 'Niches' ),
 				'public' => true,
 				'hierarchical' => false,
+			)
+		);
+
+		register_taxonomy(
+			'category_layouts',
+			$types,
+			array(
+				'label' => __( 'Categories' ),
+				'public' => true,
+				'hierarchical' => true,
 			)
 		);
 	}
@@ -86,15 +96,33 @@ class SiteOrigin_Layout_Directory {
 		global $post;
 
 		if ( ! empty( $_GET['action'] ) && $_GET['action'] == 'download' ) {
-			header( 'content-type: application/json' );
 			$panels_data = get_post_meta( $post->ID, 'panels_data', true );
+			
+			if ( empty( $panels_data ) ) {
+				// Create some sample panels data if none exists.
+				$panels_data = array(
+					'widgets' => array(),
+					'grids' => array(
+						array(
+							'cells' => 1,
+							'style' => array()
+						)
+					),
+					'grid_cells' => array(
+						array(
+							'weight' => 1,
+							'style' => array()
+						)
+					)
+				);
+			}
+			
 			$panels_data = apply_filters( 'siteorigin_layout_viewer_panels_data', $panels_data, $post );
 
 			// Convert all fields that have a fallback option.
 			$panels_data = $this->convert_to_fallback( $panels_data );
 
-			echo json_encode( $panels_data );
-			exit();
+			wp_send_json( $panels_data );
 		}
 	}
 
@@ -152,7 +180,6 @@ class SiteOrigin_Layout_Directory {
 		if ( $level > 10 ) {
 			return $instance;
 		}
-
 		foreach ( $form as $id => $field ) {
 			if ( $field['type'] == 'repeater' ) {
 				if ( ! empty( $instance[ $id ] ) ) {
@@ -196,7 +223,7 @@ class SiteOrigin_Layout_Directory {
 	 */
 	public function convert_styles_to_fallback( $styles, $type ) {
 		if ( empty( $this->style_fields[ $type ] ) ) {
-			$this->style_fields[ $type ] = apply_filters( 'siteorigin_panels_' . $type . '_style_fields', array() );
+			$this->style_fields[ $type ] = apply_filters( 'siteorigin_panels_' . $type . '_style_fields', array(), 0, array() );
 		}
 
 		foreach ( $this->style_fields[ $type ] as $field_id => $field ) {
@@ -225,16 +252,24 @@ class SiteOrigin_Layout_Directory {
 		$query = array(
 			'post_status' => 'publish',
 			'post_type' => 'layout',
-			'posts_per_page' => 16,
+			'nopaging ' => true,
 			'load_posts' => true,
 		);
 
-		if ( ! empty( $_GET['search'] ) ) {
-			$query['s'] = stripslashes( $_GET['search'] );
-		}
-
-		if ( ! empty( $_GET['page'] ) ) {
-			$query['paged'] = intval( $_GET['page'] );
+		// Backwards compatibility check.
+		if ( ! empty( $_GET['all'] ) ) {
+			// We now return all layouts rather than just 16.
+			$query['nopaging'] = true;
+		} else {
+			$query['posts_per_page'] = 16;
+			if ( ! empty( $_GET['search'] ) ) {
+				$query['s'] = stripslashes( $_GET['search'] );
+			}
+	
+			// BC.
+			if ( ! empty( $_GET['page'] ) ) {
+				$query['paged'] = intval( $_GET['page'] );
+			}
 		}
 
 		$query = apply_filters( 'siteorigin_layout_viewer_query', $query );
@@ -244,16 +279,47 @@ class SiteOrigin_Layout_Directory {
 		);
 
 		if ( ! empty( $query ) ) {
-			if ( class_exists( 'SWP_Query' ) && ! empty( $query['s'] ) ) {
-				$layouts_query = new SWP_Query( $query );
+			// Backwards compatibility check.
+			if ( empty( $_GET['all'] ) ) {
+				if ( class_exists( 'SWP_Query' ) && ! empty( $query['s'] ) ) { // BC.
+					$layouts_query = new SWP_Query( $query );
+				} else {
+					$layouts_query = new WP_Query( $query );
+				}
+				$results['found'] = $layouts_query->found_posts;
+				$results['max_num_pages'] = $layouts_query->max_num_pages;
 			} else {
 				$layouts_query = new WP_Query( $query );
 			}
 
-			$results[ 'found' ] = $layouts_query->found_posts;
-			$results[ 'max_num_pages' ] = $layouts_query->max_num_pages;
+			$results['found'] = $layouts_query->found_posts;
+			$results['niches'] = self::get_type_terms( 'niches' );
+			$results['categories'] = self::get_type_terms( 'category_layouts' );
 
 			foreach ( $layouts_query->posts as $post ) {
+				// Skip layouts without panels_data.
+				if ( ! metadata_exists( 'post', $post->ID, 'panels_data' ) ) {
+					$results['found']--; // Decrement the count
+					continue;
+				}
+				
+				$category = wp_get_post_terms( $post->ID, 'category_layouts', array( 'fields' => 'names' ) );
+				$niches = wp_get_post_terms( $post->ID, 'niches', array( 'fields' => 'names' ) );
+
+				// Process category and niches for proper CSS class filtering.
+				$processed_category = ! empty( $category ) ? $category[0] : '';
+				$processed_niches = ! empty( $niches ) ? json_encode( $niches ) : '';
+				
+				// Create CSS-safe class names for filtering.
+				$category_class = ! empty( $processed_category ) ? 'so-' . sanitize_title( $processed_category ) : '';
+				$niche_classes = '';
+				if ( ! empty( $niches ) ) {
+					$niche_classes = ' ' . implode( ' ', array_map( function( $niche ) {
+						return 'so-' . sanitize_title( $niche );
+					}, $niches ) );
+				}
+				$css_class = trim( $category_class . $niche_classes );
+
 				$results['items'][] = array(
 					'id' => $post->ID,
 					'slug' => $post->post_name,
@@ -261,15 +327,37 @@ class SiteOrigin_Layout_Directory {
 					'description' => $post->post_excerpt,
 					'preview' => get_permalink( $post ),
 					'screenshot' => get_the_post_thumbnail_url( $post ),
+					'access' => $post->post_type == 'premium_layouts' ? 'premium' : 'free',
+					'category' => $processed_category,
+					'niches' => $processed_niches,
+					'class' => $css_class, // Add the CSS class for filtering.
 				);
 			}
 		}
 
 		$results = apply_filters( 'siteorigin_layout_viewer_results', $results );
 
-		header( 'content-type: application/json' );
-		echo json_encode( $results );
-		wp_die();
+		wp_send_json( $results );
+	}
+
+	public static function get_type_terms( $term_type ) {
+		$terms = get_terms( array(
+			'taxonomy' => $term_type,
+			'hide_empty' => false,
+		) );
+
+		if ( empty( $terms ) || is_wp_error( $terms ) ) {
+			return null;
+		}
+
+		$return = array();
+		foreach ( $terms as $term ) {
+			// Format for filtering: convert name to CSS class format with 'so-' prefix.
+			$css_class = 'so-' . sanitize_title( $term->name );
+			$return[ $css_class ] = $term->name;
+		}
+
+		return apply_filters( 'siteorigin_layout_viewer_type_terms', $return );
 	}
 }
 
