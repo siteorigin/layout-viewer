@@ -1,0 +1,20 @@
+name: Deploy Layout Viewer
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.DO_LAYOUTS_HOST }}
+          username: ${{ secrets.DO_LAYOUTS_USER }}
+          port: ${{ secrets.DO_LAYOUTS_PORT }}
+          key: ${{ secrets.DO_LAYOUTS_SSH_KEY }}
+          script: |
+            /usr/local/bin/deploy-layout-viewer
