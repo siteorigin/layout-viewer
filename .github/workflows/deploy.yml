@@ -1,20 +1,14 @@
-name: Deploy Layout Viewer
+# Deploys through the shared SiteOrigin workflow; siteorigin/.github's README
+# names the secrets. master deploys the layouts.siteorigin.com theme.
+name: Deploy
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.1.0
-        with:
-          host: ${{ secrets.DO_LAYOUTS_HOST }}
-          username: ${{ secrets.DO_LAYOUTS_USER }}
-          port: ${{ secrets.DO_LAYOUTS_PORT }}
-          key: ${{ secrets.DO_LAYOUTS_SSH_KEY }}
-          script: |
-            /usr/local/bin/deploy-layout-viewer
+    uses: siteorigin/.github/.github/workflows/deploy.yml@v1
+    with:
+      live: deploy-layout-viewer
+    secrets: inherit
